@@ -1,0 +1,52 @@
+frontend/
+│── package.json
+│── next.config.mjs
+│── tailwind.config.js
+│── postcss.config.js
+│── tsconfig.json
+│── public/                       # Static assets (images, logos, icons, etc.)
+│
+└── src/
+    ├── app/                       # App Router
+    │   ├── layout.tsx             # Root layout (Navbar + Footer here)
+    │   ├── page.tsx               # Homepage
+    │   │
+    │   ├── articles/              # Articles pages
+    │   │   ├── page.tsx           # List all articles
+    │   │   └── [slug]/page.tsx    # Single article detail
+    │   │
+    │   ├── events/                # Events pages
+    │   │   ├── page.tsx           # List events
+    │   │   └── [slug]/page.tsx    # Event detail
+    │   │
+    │   ├── account/               # Auth system
+    │   │   ├── login/page.tsx
+    │   │   ├── register/page.tsx
+    │   │   └── profile/page.tsx
+    │   │
+    │   ├── newsletter/            # Newsletter UI
+    │   │   └── page.tsx           # Subscribe/unsubscribe
+    │   │
+    │   ├── notifications/         # User notifications
+    │   │   └── page.tsx
+    │   │
+    │   └── dashboard/             # Admin analytics (optional)
+    │       └── page.tsx
+    │
+    ├── components/                # Reusable UI components
+    │   ├── layout/                # Navbar, Footer, Sidebar
+    │   ├── ui/                    # shadcn/ui components
+    │   ├── forms/                 # Login/Register/Newsletter forms
+    │   └── common/                # Buttons, Cards, Modals, etc.
+    │
+    ├── lib/                       # Helpers & API services
+    │   ├── api.ts                 # Fetch wrapper for Django backend
+    │   └── auth.ts                # JWT token helpers
+    │
+    ├── hooks/                     # Custom React hooks
+    │   ├── useAuth.ts             # Handle JWT auth
+    │   ├── useArticles.ts
+    │   └── useEvents.ts
+    │
+    └── styles/
+        └── globals.css   
