@@ -13,17 +13,8 @@ const nextConfig = {
         hostname: "127.0.0.1",
         port: "8000",
         pathname: "/media/**",
-      },
-      {
-        protocol: "https",
-        hostname: "res.cloudinary.com",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "crappylife-backend.onrender.com", // Replace with your Render backend domain
-        pathname: "/media/**",
-      },
+      }
+
     ],
   },
 };
