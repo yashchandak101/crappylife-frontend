@@ -27,7 +27,7 @@ export function getImageUrl(path: string) {
   if (path.startsWith("http")) return path; // already full URL
 
   // prepend your Cloudinary base URL
-  return `https://res.cloudinary.com/<your-cloud-name>/${path}`;
+  return `https://res.cloudinary.com/dvksqgurb/${path}`;
 }
 
   useEffect(() => {
