@@ -22,11 +22,13 @@ export default function ArticleDetailPage() {
   const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const getImageUrl = (img?: string) => {
-    if (!img) return "/default-placeholder.png";
-    if (img.startsWith("http")) return img;
-    return `${process.env.NEXT_PUBLIC_API_URL}${img}`;
-  };
+export function getImageUrl(path: string) {
+  if (!path) return "/default.jpg"; // fallback image
+  if (path.startsWith("http")) return path; // already full URL
+
+  // prepend your Cloudinary base URL
+  return `https://res.cloudinary.com/<your-cloud-name>/${path}`;
+}
 
   useEffect(() => {
     async function fetchArticle() {
