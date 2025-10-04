@@ -75,7 +75,7 @@ export default function FeaturedCarousel() {
           {articles.map((article) => (
             <CarouselItem key={article.id} className="basis-full">
               <Link href={`/articles/${article.slug}`} className="block relative">
-                {article.cover_image && (
+              
                   <div className="relative w-full h-96 mb-6">
                     <Image
   src="https://res.cloudinary.com/dvksqgurb/image/upload/v1759583581/ciijb4ukfewcen5zttxm.webp"
@@ -84,7 +84,7 @@ export default function FeaturedCarousel() {
   height={600}
 />
                   </div>
-                )}
+               
                 <div className="absolute bottom-0 left-0 w-full bg-black/50 text-white p-4 rounded-b-xl">
                   <h2 className="text-lg sm:text-2xl font-bold">{article.title}</h2>
                   <p className="text-sm opacity-90">
