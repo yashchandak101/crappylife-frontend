@@ -76,7 +76,7 @@ export default function FeaturedCarousel() {
               <Link href={`/articles/${article.slug}`} className="block relative">
                 {article.cover_image && (
                   <div className="relative w-full h-96 mb-6">
-                    <Image
+                    <Img
                       src='https://res.cloudinary.com/dvksqgurb/image/upload/v1759591597/p70wxyjwm5xqfccsdzdf.webp'
                       alt={article.title}
                       fill
