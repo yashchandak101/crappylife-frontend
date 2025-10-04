@@ -5,14 +5,11 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "res.cloudinary.com",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "crappylife-backend.onrender.com",
+        port: "", // must be empty for Cloudinary
         pathname: "/**",
       },
     ],
+    unoptimized: true, // temporarily disable optimization to confirm
   },
 };
 
