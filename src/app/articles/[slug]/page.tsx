@@ -15,20 +15,22 @@ interface Article {
   published_at?: string;
 }
 
-function getImageUrl(path: string) {
+function getImageUrl(path: string | undefined): string {
   if (!path) return "/default.jpg";
 
-  // already full Cloudinary or external URL
+  // Already a full URL (Cloudinary or others)
   if (path.startsWith("http")) return path;
 
-  // Cloudinary relative paths (like "image/upload/articles/...")
+  // Handle Cloudinary paths like "image/upload/articles/30gold.webp"
   if (path.startsWith("image/")) {
     return `https://res.cloudinary.com/dvksqgurb/${path}`;
   }
 
-  // If served by your Django backend (like "/media/articles/...")
+  // Handle backend-served paths like "/media/articles/..."
   return `${process.env.NEXT_PUBLIC_API_URL}${path.startsWith("/") ? "" : "/"}${path}`;
 }
+
+
 
 
 export default function ArticleDetailPage() {
