@@ -12,20 +12,25 @@ interface Article {
   content?: string;
 }
 
-function getImageUrl(path: string | undefined): string {
+function getImageUrl(path?: string): string {
   if (!path) return "/default.jpg";
 
-  // Already a full URL (Cloudinary or others)
+  // Already a complete URL (for safety)
   if (path.startsWith("http")) return path;
 
-  // Handle Cloudinary paths like "image/upload/articles/30gold.webp"
-  if (path.startsWith("image/")) {
+  // Cloudinary relative path
+  if (path.startsWith("image/upload")) {
     return `https://res.cloudinary.com/dvksqgurb/${path}`;
   }
 
-  // Handle backend-served paths like "/media/articles/..."
-  return `${process.env.NEXT_PUBLIC_API_URL}${path.startsWith("/") ? "" : "/"}${path}`;
+  // Local media path
+  if (path.startsWith("/media/")) {
+    return `${process.env.NEXT_PUBLIC_API_URL}${path}`;
+  }
+
+  return "/default.jpg";
 }
+
 
 
 
