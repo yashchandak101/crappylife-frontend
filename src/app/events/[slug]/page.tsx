@@ -14,6 +14,24 @@ interface Event {
   location?: string;
 }
 
+// ✅ Helper to build correct Cloudinary or backend URLs
+function getImageUrl(path: string | undefined): string {
+  if (!path) return "/fallback-image.png"; // fallback image
+
+  // Already a full URL (Cloudinary or external)
+  if (path.startsWith("http")) return path;
+
+  // Cloudinary path like "image/upload/v1759603953/xyz.png"
+  if (path.startsWith("image/")) {
+    return `https://res.cloudinary.com/dvksqgurb/${path}`;
+  }
+
+  // Backend-served path like "/media/events/img.png"
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "";
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  return `${baseUrl}${cleanPath}`;
+}
+
 export default function EventDetailPage() {
   const params = useParams();
   const slug = params.slug as string;
@@ -37,9 +55,7 @@ export default function EventDetailPage() {
       }
     }
 
-    if (slug) {
-      fetchEvent();
-    }
+    if (slug) fetchEvent();
   }, [slug]);
 
   if (loading) return <p className="text-center mt-10">Loading...</p>;
@@ -52,10 +68,11 @@ export default function EventDetailPage() {
       {event.image && (
         <div className="relative w-full h-96 mb-6">
           <Image
-            src={event.image}
+            src={getImageUrl(event.image)} // ✅ now uses helper
             alt={event.title}
             fill
             className="object-cover rounded-lg shadow"
+            unoptimized
           />
         </div>
       )}
@@ -65,9 +82,7 @@ export default function EventDetailPage() {
       )}
 
       <div className="text-sm text-gray-600 space-y-2">
-        {event.date && (
-          <p>📅 {new Date(event.date).toLocaleDateString()}</p>
-        )}
+        {event.date && <p>📅 {new Date(event.date).toLocaleDateString()}</p>}
         {event.location && <p>📍 {event.location}</p>}
       </div>
     </div>

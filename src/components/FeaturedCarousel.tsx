@@ -20,6 +20,7 @@ interface Article {
 }
 
 function getImageUrl(path: string | undefined): string {
+  if (!path) return "/default.jpg";
 
   // Already a full URL (Cloudinary or others)
   if (path.startsWith("http")) return path;
@@ -76,8 +77,8 @@ export default function FeaturedCarousel() {
               <Link href={`/articles/${article.slug}`} className="block relative">
                 {article.cover_image && (
                   <div className="relative w-full h-96 mb-6">
-                    <Img
-                      src='https://res.cloudinary.com/dvksqgurb/image/upload/v1759591597/p70wxyjwm5xqfccsdzdf.webp'
+                    <Image
+                      src={getImageUrl(article.cover_image)}
                       alt={article.title}
                       fill
                       className="object-cover rounded-lg"

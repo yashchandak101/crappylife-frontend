@@ -9,10 +9,27 @@ interface Event {
   title: string;
   slug: string;
   description: string;
-  start_date: string;
-  end_date: string;
+  date: string;
   location: string;
   image: string;
+}
+
+// ✅ Safely build full Cloudinary or backend image URLs
+function getImageUrl(path: string | undefined): string {
+  if (!path) return "/fallback-image.png"; // fallback
+
+  // Already full URL (Cloudinary or external)
+  if (path.startsWith("http")) return path;
+
+  // Cloudinary short path e.g. "image/upload/v1759603953/rbj3awpctadhc3ukxndi.png"
+  if (path.startsWith("image/")) {
+    return `https://res.cloudinary.com/dvksqgurb/${path}`;
+  }
+
+  // Backend-served path like "media/events/img.png"
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "";
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  return `${baseUrl}${cleanPath}`;
 }
 
 export default function EventsPage() {
@@ -22,12 +39,14 @@ export default function EventsPage() {
   useEffect(() => {
     async function fetchEvents() {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/events/events/`);
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/events/events/`
+        );
         if (!res.ok) throw new Error("Failed to fetch events");
         const data = await res.json();
         setEvents(data);
       } catch (err) {
-        console.error(err);
+        console.error("❌ Error fetching events:", err);
       } finally {
         setLoading(false);
       }
@@ -36,7 +55,6 @@ export default function EventsPage() {
   }, []);
 
   if (loading) return <p className="text-center mt-10">Loading events...</p>;
-
   if (!events.length) return <p className="text-center mt-10">No events found.</p>;
 
   return (
@@ -51,17 +69,20 @@ export default function EventsPage() {
           >
             <div className="relative w-full h-60">
               <Image
-                src={event.image}
+                src={getImageUrl(event.image)}
                 alt={event.title}
                 fill
                 className="object-cover"
+                unoptimized // ✅ avoid Next.js image optimizer 400 error
               />
             </div>
             <div className="p-4">
               <h2 className="text-lg font-bold">{event.title}</h2>
-              <p className="text-sm text-gray-600 mt-1 line-clamp-3">{event.description}</p>
+              <p className="text-sm text-gray-600 mt-1 line-clamp-3">
+                {event.description}
+              </p>
               <p className="mt-2 text-sm font-medium text-gray-800">
-                📅 {new Date(event.start_date).toLocaleDateString()} - {new Date(event.end_date).toLocaleDateString()}
+                📅 {new Date(event.date).toLocaleDateString()} 
               </p>
               <p className="mt-1 text-sm text-gray-500">📍 {event.location}</p>
             </div>

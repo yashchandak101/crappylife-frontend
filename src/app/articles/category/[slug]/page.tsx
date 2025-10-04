@@ -14,13 +14,23 @@ interface Article {
 }
 
 // ✅ helper should be declared outside or top of component
-function getImageUrl(path: string): string {
+function getImageUrl(path: string | undefined): string {
   if (!path) return "/default.jpg"; // fallback
-  if (path.startsWith("http")) return path; // already full URL
 
-  // If using Cloudinary (from Django)
-  return ${path.startsWith("/") ? path.slice(1) : path}`;
+  // Already a full URL (Cloudinary or others)
+  if (path.startsWith("http")) return path;
+
+  // Handle Cloudinary short paths like "image/upload/v1759603953/xyz.webp"
+  if (path.startsWith("image/")) {
+    return `https://res.cloudinary.com/dvksqgurb/${path}`;
+  }
+
+  // Handle backend-served media paths like "/media/articles/..."
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "";
+  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  return `${baseUrl}${cleanPath}`;
 }
+
 
 export default function CategoryArticlesPage() {
   const params = useParams();
