@@ -12,13 +12,19 @@ interface Article {
   content?: string;
 }
 
-// ✅ Moved outside the component
 function getImageUrl(path: string) {
-  if (!path) return "/default.jpg"; // fallback image
-  if (path.startsWith("http")) return path; // already full URL
+  if (!path) return "/default.jpg";
 
-  // prepend your Cloudinary base URL
-  return `https://res.cloudinary.com/dvksqgurb/${path}`;
+  // already full Cloudinary or external URL
+  if (path.startsWith("http")) return path;
+
+  // Cloudinary relative paths (like "image/upload/articles/...")
+  if (path.startsWith("image/")) {
+    return `https://res.cloudinary.com/dvksqgurb/${path}`;
+  }
+
+  // If served by your Django backend (like "/media/articles/...")
+  return `${process.env.NEXT_PUBLIC_API_URL}${path.startsWith("/") ? "" : "/"}${path}`;
 }
 
 export default function ArticleCards() {

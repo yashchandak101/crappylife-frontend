@@ -19,7 +19,7 @@ function getImageUrl(path: string): string {
   if (path.startsWith("http")) return path; // already full URL
 
   // If using Cloudinary (from Django)
-  return `https://res.cloudinary.com/dvksqgurb/${path.startsWith("/") ? path.slice(1) : path}`;
+  return ${path.startsWith("/") ? path.slice(1) : path}`;
 }
 
 export default function CategoryArticlesPage() {

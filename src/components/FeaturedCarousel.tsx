@@ -19,13 +19,19 @@ interface Article {
   content?: string;
 }
 
-// ✅ Define this helper OUTSIDE the component
 function getImageUrl(path: string) {
   if (!path) return "/default.jpg";
+
+  // already full Cloudinary or external URL
   if (path.startsWith("http")) return path;
 
-  // Cloudinary full URL or your backend
-  return `https://res.cloudinary.com/dvksqgurb/${path}`;
+  // Cloudinary relative paths (like "image/upload/articles/...")
+  if (path.startsWith("image/")) {
+    return `https://res.cloudinary.com/dvksqgurb/${path}`;
+  }
+
+  // If served by your Django backend (like "/media/articles/...")
+  return `${process.env.NEXT_PUBLIC_API_URL}${path.startsWith("/") ? "" : "/"}${path}`;
 }
 
 export default function FeaturedCarousel() {

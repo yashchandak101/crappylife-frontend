@@ -24,13 +24,19 @@ interface Event {
   location?: string;
 }
 
-// ✅ Define helper outside (don’t export it)
-function getImageUrl(path?: string): string {
-  if (!path) return "/default.jpg"; // fallback
+function getImageUrl(path: string) {
+  if (!path) return "/default.jpg";
+
+  // already full Cloudinary or external URL
   if (path.startsWith("http")) return path;
 
-  // Cloudinary base path (adjust if your uploads differ)
-  return `https://res.cloudinary.com/dvksqgurb/${path.startsWith("/") ? path.slice(1) : path}`;
+  // Cloudinary relative paths (like "image/upload/articles/...")
+  if (path.startsWith("image/")) {
+    return `https://res.cloudinary.com/dvksqgurb/${path}`;
+  }
+
+  // If served by your Django backend (like "/media/articles/...")
+  return `${process.env.NEXT_PUBLIC_API_URL}${path.startsWith("/") ? "" : "/"}${path}`;
 }
 
 export default function SearchPage() {
