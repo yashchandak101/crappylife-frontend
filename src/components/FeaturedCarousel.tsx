@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-
+import Image from "next/image";
 import Link from "next/link";
 import {
   Carousel,
@@ -27,7 +27,7 @@ function getImageUrl(path: string | undefined): string {
 
   // Handle Cloudinary paths like "image/upload/articles/30gold.webp"
   if (path.startsWith("image/")) {
-    return `https://res.cloudinary.com/dvksqgurb/${path}`;
+    return `https://res.cloudinary.com/dvksqgurb/_next/${path}`;
   }
 
   // Handle backend-served paths like "/media/articles/..."
@@ -77,10 +77,11 @@ export default function FeaturedCarousel() {
               <Link href={`/articles/${article.slug}`} className="block relative">
                 {article.cover_image && (
                   <div className="relative w-full h-96 mb-6">
-                    <img
+                    <Image
                       src={getImageUrl(article.cover_image)}
                       alt={article.title}
-                      className="object-cover rounded-lg w-full h-full"
+                      fill
+                      className="object-cover rounded-lg"
                     />
                   </div>
                 )}
