@@ -5,6 +5,10 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 
+
+import React, { Suspense } from "react";
+import SearchPage from "./SearchPage";
+
 interface Article {
   id: number;
   title: string;
@@ -171,5 +175,12 @@ export default function SearchPage() {
         </>
       )}
     </div>
+  );
+}
+export default function Page() {
+  return (
+    <Suspense fallback={<p className="text-center mt-10">Loading search results...</p>}>
+      <SearchPage />
+    </Suspense>
   );
 }
