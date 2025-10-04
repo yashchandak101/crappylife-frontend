@@ -48,6 +48,14 @@ export default function CategoryArticlesPage() {
     return <p className="text-center mt-10">No articles found for "{slug}".</p>;
   }
 
+  export function getImageUrl(path: string) {
+  if (!path) return "/default.jpg"; // fallback image
+  if (path.startsWith("http")) return path; // already full URL
+
+  // prepend your Cloudinary base URL
+  return `https://res.cloudinary.com/<your-cloud-name>/${path}`;
+}
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-6">Articles in "{slug}"</h1>
@@ -60,12 +68,12 @@ export default function CategoryArticlesPage() {
           >
             <div className="relative w-full h-48">
               <Image
-                src={article.cover_image}
-                alt={article.title}
-                fill
-                className="object-cover"
-              />
-            </div>
+                  src={getImageUrl(article.cover_image)}
+                  alt={article.title}
+                  fill
+                  className="object-cover rounded-lg"
+                />
+              </div>
             <div className="p-4">
               <h3 className="text-lg font-semibold">{article.title}</h3>
               {article.content && (
