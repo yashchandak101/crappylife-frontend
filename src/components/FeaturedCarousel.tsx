@@ -78,7 +78,7 @@ export default function FeaturedCarousel() {
                 {article.cover_image && (
                   <div className="relative w-full h-96 mb-6">
                     <Image
-  src="https://res.cloudinary.com/dvksqgurb/image/upload/articles/30gold.webp"
+  src="https://res.cloudinary.com/dvksqgurb/image/upload/v1759583581/ciijb4ukfewcen5zttxm.webp"
   alt="test"
   width={800}
   height={600}
