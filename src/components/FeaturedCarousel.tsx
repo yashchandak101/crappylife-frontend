@@ -20,14 +20,13 @@ interface Article {
 }
 
 function getImageUrl(path: string | undefined): string {
-  if (!path) return "/default.jpg";
 
   // Already a full URL (Cloudinary or others)
   if (path.startsWith("http")) return path;
 
   // Handle Cloudinary paths like "image/upload/articles/30gold.webp"
   if (path.startsWith("image/")) {
-    return `https://res.cloudinary.com/dvksqgurb/_next/${path}`;
+    return `https://res.cloudinary.com/dvksqgurb/${path}`;
   }
 
   // Handle backend-served paths like "/media/articles/..."
@@ -78,7 +77,7 @@ export default function FeaturedCarousel() {
                 {article.cover_image && (
                   <div className="relative w-full h-96 mb-6">
                     <Image
-                      src={getImageUrl(article.cover_image)}
+                      src='https://res.cloudinary.com/dvksqgurb/image/upload/v1759591597/p70wxyjwm5xqfccsdzdf.webp'
                       alt={article.title}
                       fill
                       className="object-cover rounded-lg"
