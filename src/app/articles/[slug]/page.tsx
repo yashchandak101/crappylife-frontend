@@ -15,20 +15,20 @@ interface Article {
   published_at?: string;
 }
 
+// ✅ helper function (don’t export inside component)
+function getImageUrl(path: string) {
+  if (!path) return "/default.jpg"; // fallback image
+  if (path.startsWith("http")) return path; // already full URL
+  // prepend your Cloudinary base URL
+  return `https://res.cloudinary.com/dvksqgurb/${path}`;
+}
+
 export default function ArticleDetailPage() {
   const params = useParams();
   const slug = params.slug as string;
 
   const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
-
-export function getImageUrl(path: string) {
-  if (!path) return "/default.jpg"; // fallback image
-  if (path.startsWith("http")) return path; // already full URL
-
-  // prepend your Cloudinary base URL
-  return `https://res.cloudinary.com/dvksqgurb/${path}`;
-}
 
   useEffect(() => {
     async function fetchArticle() {
@@ -49,13 +49,8 @@ export function getImageUrl(path: string) {
     if (slug) fetchArticle();
   }, [slug]);
 
-  if (loading) {
-    return <p className="text-center mt-10">Loading...</p>;
-  }
-
-  if (!article) {
-    return <p className="text-center mt-10">Article not found.</p>;
-  }
+  if (loading) return <p className="text-center mt-10">Loading...</p>;
+  if (!article) return <p className="text-center mt-10">Article not found.</p>;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -88,6 +83,7 @@ export function getImageUrl(path: string) {
             alt={article.title}
             fill
             className="object-cover rounded-lg"
+            unoptimized
           />
         </div>
       )}

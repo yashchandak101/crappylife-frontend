@@ -16,7 +16,16 @@ interface Article {
   title: string;
   slug: string;
   cover_image: string;
-  content?: string; // assuming your API returns this
+  content?: string;
+}
+
+// ✅ Define this helper OUTSIDE the component
+function getImageUrl(path: string) {
+  if (!path) return "/default.jpg";
+  if (path.startsWith("http")) return path;
+
+  // Cloudinary full URL or your backend
+  return `https://res.cloudinary.com/dvksqgurb/${path}`;
 }
 
 export default function FeaturedCarousel() {
@@ -28,12 +37,20 @@ export default function FeaturedCarousel() {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/articles/articles/featured/`
         );
+
+        // ✅ Check for bad responses
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+
         const data = await res.json();
+        console.log("✅ Featured Articles:", data);
         setArticles(data);
       } catch (err) {
-        console.error("Error loading featured articles:", err);
+        console.error("❌ Error loading featured articles:", err);
       }
     }
+
     fetchFeatured();
   }, []);
 
@@ -41,17 +58,9 @@ export default function FeaturedCarousel() {
     if (!text) return "";
     return text.length > length ? text.slice(0, length) + "..." : text;
   };
-export function getImageUrl(path: string) {
-  if (!path) return "/default.jpg"; // fallback image
-  if (path.startsWith("http")) return path; // already full URL
-
-  // prepend your Cloudinary base URL
-  return `https://res.cloudinary.com/dvksqgurb/${path}`;
-}
-
 
   return (
-    <div className="w-full py-4"> {/* removed max-w-6xl mx-auto */}
+    <div className="w-full py-4">
       <Carousel className="w-full">
         <CarouselContent>
           {articles.map((article) => (

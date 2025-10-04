@@ -13,9 +13,18 @@ interface Article {
   content?: string;
 }
 
+// ✅ helper should be declared outside or top of component
+function getImageUrl(path: string): string {
+  if (!path) return "/default.jpg"; // fallback
+  if (path.startsWith("http")) return path; // already full URL
+
+  // If using Cloudinary (from Django)
+  return `https://res.cloudinary.com/dvksqgurb/${path.startsWith("/") ? path.slice(1) : path}`;
+}
+
 export default function CategoryArticlesPage() {
   const params = useParams();
-  const slug = params.slug as string; // ✅ get category slug
+  const slug = params.slug as string;
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -29,32 +38,19 @@ export default function CategoryArticlesPage() {
         const data = await res.json();
         setArticles(data);
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching:", err);
       } finally {
         setLoading(false);
       }
     }
 
-    if (slug) {
-      fetchArticles();
-    }
+    if (slug) fetchArticles();
   }, [slug]);
 
-  if (loading) {
-    return <p className="text-center mt-10">Loading...</p>;
-  }
+  if (loading) return <p className="text-center mt-10">Loading...</p>;
 
-  if (!articles.length) {
+  if (!articles.length)
     return <p className="text-center mt-10">No articles found for "{slug}".</p>;
-  }
-
-  export function getImageUrl(path: string) {
-  if (!path) return "/default.jpg"; // fallback image
-  if (path.startsWith("http")) return path; // already full URL
-
-  // prepend your Cloudinary base URL
-  return `https://res.cloudinary.com/dvksqgurb/${path}`;
-}
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -66,14 +62,16 @@ export default function CategoryArticlesPage() {
             href={`/articles/${article.slug}`}
             className="border rounded-lg overflow-hidden shadow hover:shadow-lg transition block"
           >
-            <div className="relative w-full h-48">
-              <Image
+            {article.cover_image && (
+              <div className="relative w-full h-48">
+                <Image
                   src={getImageUrl(article.cover_image)}
                   alt={article.title}
                   fill
                   className="object-cover rounded-lg"
                 />
               </div>
+            )}
             <div className="p-4">
               <h3 className="text-lg font-semibold">{article.title}</h3>
               {article.content && (

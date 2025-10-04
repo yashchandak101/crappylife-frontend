@@ -24,6 +24,15 @@ interface Event {
   location?: string;
 }
 
+// ✅ Define helper outside (don’t export it)
+function getImageUrl(path?: string): string {
+  if (!path) return "/default.jpg"; // fallback
+  if (path.startsWith("http")) return path;
+
+  // Cloudinary base path (adjust if your uploads differ)
+  return `https://res.cloudinary.com/dvksqgurb/${path.startsWith("/") ? path.slice(1) : path}`;
+}
+
 export default function SearchPage() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
@@ -33,15 +42,6 @@ export default function SearchPage() {
     events: [],
   });
   const [loading, setLoading] = useState(false);
-
-
-export function getImageUrl(path: string) {
-  if (!path) return "/default.jpg"; // fallback image
-  if (path.startsWith("http")) return path; // already full URL
-
-  // prepend your Cloudinary base URL
-  return `https://res.cloudinary.com/dvksqgurb/${path}`;
-}
 
   const truncateText = (text: string = "", length: number) =>
     text.length > length ? text.slice(0, length) + "..." : text;
@@ -55,6 +55,7 @@ export function getImageUrl(path: string) {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/search/?q=${encodeURIComponent(query)}`
         );
+        if (!res.ok) throw new Error("Failed to fetch search results");
         const data = await res.json();
         setResults({
           articles: data.articles || [],

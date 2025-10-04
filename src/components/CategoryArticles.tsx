@@ -8,7 +8,7 @@ interface Article {
   id: number;
   title: string;
   slug: string;
-  cover_image: string;
+  cover_image?: string;
   content?: string;
 }
 
@@ -17,6 +17,13 @@ interface Category {
   name: string;
   slug: string;
   articles: Article[];
+}
+
+// ✅ define outside component
+function getImageUrl(path?: string): string {
+  if (!path) return "/default.jpg"; // fallback
+  if (path.startsWith("http")) return path;
+  return `https://res.cloudinary.com/dvksqgurb/${path.startsWith("/") ? path.slice(1) : path}`;
 }
 
 export default function CategoriesWithArticles() {
@@ -29,14 +36,16 @@ export default function CategoriesWithArticles() {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/articles/categories/`
         );
+        if (!res.ok) throw new Error("Failed to fetch categories");
         const data = await res.json();
 
-        // Fetch articles per category
+        // ✅ Fetch articles per category concurrently
         const categoriesWithArticles = await Promise.all(
           data.map(async (cat: any) => {
             const res = await fetch(
               `${process.env.NEXT_PUBLIC_API_URL}/api/articles/articles/by-category/${cat.slug}/`
             );
+            if (!res.ok) return { ...cat, articles: [] };
             const articles = await res.json();
             return { ...cat, articles };
           })
@@ -49,75 +58,64 @@ export default function CategoriesWithArticles() {
         setLoading(false);
       }
     }
+
     fetchCategories();
   }, []);
 
-  const truncateText = (text: string, length: number) =>
+  const truncateText = (text: string = "", length: number) =>
     text.length > length ? text.slice(0, length) + "..." : text;
 
-  if (loading) return <p>Loading categories...</p>;
-
-// utils/image.ts
-export function getImageUrl(path: string) {
-  if (!path) return "/default.jpg"; // fallback image
-  if (path.startsWith("http")) return path; // already full URL
-
-  // prepend your Cloudinary base URL
-  return `https://res.cloudinary.com/dvksqgurb/${path}`;
-}
-
-
+  if (loading) return <p className="text-center py-10">Loading categories...</p>;
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
       {categories.map((category) => (
-  <div key={category.id}>
-    {/* Category Heading with link */}
-    <h2 className="text-2xl font-bold mb-6">
-      <Link
-        href={`/articles/category/${category.slug}`}
-        className="hover:text-blue-600 transition"
-      >
-        {category.name}
-      </Link>
-    </h2>
+        <div key={category.id}>
+          {/* ✅ Category Heading with link */}
+          <h2 className="text-2xl font-bold mb-6">
+            <Link
+              href={`/articles/category/${category.slug}`}
+              className="hover:text-blue-600 transition"
+            >
+              {category.name}
+            </Link>
+          </h2>
 
-    {/* Articles */}
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {category.articles.length > 0 ? (
-        category.articles.map((article) => (
-          <Link
-            key={article.id}
-            href={`/articles/${article.slug}`}
-            className="border rounded-lg overflow-hidden shadow hover:shadow-lg transition block"
-          >
-            {article.cover_image && (
-              <div className="relative w-full h-96 mb-6">
-                <Image
-                  src={getImageUrl(article.cover_image)}
-                  alt={article.title}
-                  fill
-                  className="object-cover rounded-lg"
-                />
-              </div>
+          {/* ✅ Articles */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {category.articles.length > 0 ? (
+              category.articles.map((article) => (
+                <Link
+                  key={article.id}
+                  href={`/articles/${article.slug}`}
+                  className="border rounded-lg overflow-hidden shadow hover:shadow-lg transition block"
+                >
+                  {article.cover_image && (
+                    <div className="relative w-full h-60">
+                      <Image
+                        src={getImageUrl(article.cover_image)}
+                        alt={article.title}
+                        fill
+                        className="object-cover rounded-t-lg"
+                      />
+                    </div>
+                  )}
+                  <div className="p-4">
+                    <h3 className="text-lg font-semibold">{article.title}</h3>
+                    {article.content && (
+                      <p className="text-sm text-gray-600 mt-2 line-clamp-2">
+                        {truncateText(article.content, 80)}
+                      </p>
+                    )}
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <p className="text-gray-500">No articles in this category.</p>
             )}
-            <div className="p-4">
-              <h3 className="text-lg font-semibold">{article.title}</h3>
-              {article.content && (
-                <p className="text-sm text-gray-600 mt-2">
-                  {truncateText(article.content, 50)}
-                </p>
-              )}
-            </div>
-          </Link>
-        ))
-      ) : (
-        <p className="text-gray-500">No articles in this category.</p>
-      )}
-    </div>
-  </div>
-))}
-
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
