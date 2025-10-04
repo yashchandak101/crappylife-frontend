@@ -2,6 +2,7 @@
 const nextConfig = {
   images: {
     remotePatterns: [
+      // Local development media
       {
         protocol: "http",
         hostname: "localhost",
@@ -14,14 +15,10 @@ const nextConfig = {
         port: "8000",
         pathname: "/media/**",
       },
+      // Cloudinary (production)
       {
         protocol: "https",
         hostname: "res.cloudinary.com",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "crappylife-backend.onrender.com", // Replace with your Render backend domain
         pathname: "/**",
       },
     ],
