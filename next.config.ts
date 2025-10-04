@@ -22,7 +22,7 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "crappylife-backend.onrender.com", // Replace with your Render backend domain
-        pathname: "/media/**",
+        pathname: "/**",
       },
     ],
   },
