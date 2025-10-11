@@ -10,6 +10,8 @@ interface Article {
   slug: string;
   cover_image?: string;
   content?: string;
+  author?: string;
+  published_at?: string;
 }
 
 interface Category {
@@ -21,21 +23,12 @@ interface Category {
 
 function getImageUrl(path: string | undefined): string {
   if (!path) return "/default.jpg";
-
-  // Already a full URL (Cloudinary or others)
   if (path.startsWith("http")) return path;
-
-  // Handle Cloudinary paths like "image/upload/articles/30gold.webp"
   if (path.startsWith("image/")) {
     return `https://res.cloudinary.com/dvksqgurb/${path}`;
   }
-
-  // Handle backend-served paths like "/media/articles/..."
   return `${process.env.NEXT_PUBLIC_API_URL}${path.startsWith("/") ? "" : "/"}${path}`;
 }
-
-
-
 
 export default function CategoriesWithArticles() {
   const [categories, setCategories] = React.useState<Category[]>([]);
@@ -50,7 +43,7 @@ export default function CategoriesWithArticles() {
         if (!res.ok) throw new Error("Failed to fetch categories");
         const data = await res.json();
 
-        // ✅ Fetch articles per category concurrently
+        // ✅ Fetch articles for each category concurrently
         const categoriesWithArticles = await Promise.all(
           data.map(async (cat: any) => {
             const res = await fetch(
@@ -79,10 +72,10 @@ export default function CategoriesWithArticles() {
   if (loading) return <p className="text-center py-10">Loading categories...</p>;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
+    <div className="max-w-6xl mx-auto px-4 py-8 space-y-12">
       {categories.map((category) => (
         <div key={category.id}>
-          {/* ✅ Category Heading with link */}
+          {/* ✅ Category Heading */}
           <h2 className="text-2xl font-bold mb-6">
             <Link
               href={`/articles/category/${category.slug}`}
@@ -92,32 +85,50 @@ export default function CategoriesWithArticles() {
             </Link>
           </h2>
 
-          {/* ✅ Articles */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* ✅ Articles List */}
+          <div className="flex flex-col gap-6">
             {category.articles.length > 0 ? (
               category.articles.map((article) => (
                 <Link
                   key={article.id}
                   href={`/articles/${article.slug}`}
-                  className="border rounded-lg overflow-hidden shadow hover:shadow-lg transition block"
+                  className="flex flex-col md:flex-row border rounded-xl overflow-hidden shadow hover:shadow-lg transition bg-white"
                 >
+                  {/* Image Left */}
                   {article.cover_image && (
-                    <div className="relative w-full h-60">
+                    <div className="relative w-full md:w-1/3 h-56 md:h-auto">
                       <Image
                         src={getImageUrl(article.cover_image)}
                         alt={article.title}
                         fill
-                        className="object-cover rounded-t-lg"
+                        className="object-cover"
+                        unoptimized
                       />
                     </div>
                   )}
-                  <div className="p-4">
-                    <h3 className="text-lg font-semibold">{article.title}</h3>
-                    {article.content && (
-                      <p className="text-sm text-gray-600 mt-2 line-clamp-2">
-                        {truncateText(article.content, 80)}
-                      </p>
-                    )}
+
+                  {/* Content Right */}
+                  <div className="p-5 flex flex-col justify-between w-full md:w-2/3">
+                    <div>
+                      <h3 className="text-xl font-semibold mb-2">
+                        {article.title}
+                      </h3>
+                      {article.content && (
+                        <p className="text-sm text-gray-700 mb-3 line-clamp-3">
+                          {truncateText(article.content, 120)}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="text-sm text-gray-600 space-y-1">
+                      {article.author && <p>✍️ By {article.author}</p>}
+                      {article.published_at && (
+                        <p>
+                          🕓 Published on{" "}
+                          {new Date(article.published_at).toLocaleDateString()}
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </Link>
               ))
